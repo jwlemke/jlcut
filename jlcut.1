@@ -1,0 +1,118 @@
+." man page for jlcut
+.\" Copyright 2025 James W. Lemke, MIT License
+.\" Contact jim@lemke.org with errors or kudos.
+.\" # .TH Name Man-section Revision-date Program-origin Book-title
+.TH JLCUT 1 "2025-02-08" "J.W. Lemke" "General Commands Manual"
+
+.SH NAME
+jlcut \- cut out selected portions of each input line
+
+.SH SYNOPSIS
+.nf
+.B jlcut -h
+.B jlcut -V
+.B jlcut -b \fILIST\fR [\fB-n\fR] [\fIFILE\fR...]
+.B jlcut -c \fILIST\fR [\fB-n\fR] [\fIFILE\fR...]
+.B jlcut -f \fILIST\fR [\fB-w\fR | \fB-d \fICHAR\fR] [\fB-D \fICHAR\fR] [\fB-n\fR]  [\fB-s\fR] [\fIFILE\fR...]
+.fi
+
+.SH DESCRIPTION
+The cut utility cuts out selected portions of each line (as specified
+by \fILIST\fR) from each \fIFILE\fR and writes them to the standard output.
+If no file arguments are speciied, or a file argument is a single dash ('-'),
+cut reads from the standard input.
+The items specified by \fILIST\fR can be in terms of column position or
+fields delimited by a special character.
+Columns and fields are indexed from 1.
+Index 0 will write an empty field to the output.
+
+.SH OPTIONS
+.TP
+\fB\-b\fR \fILIST\fR
+\fILIST\fR specifies byte positions.
+.TP
+\fB\-c\fR \fILIST\fR
+\fILIST\fR specifies character positions.
+.nf
+Characters may be single or multi byte (SBC or MBC) encodings.
+.fi
+.TP
+\fB\-f\fR \fILIST\fR
+\fILIST\fR specifies fields separated by a field delimeter
+(see the -d and -w options).
+.TP
+\fB\-d\fR \fICHAR\fR
+Use \fICHAR\fR as the input field delimeter instead of tab (default).
+.TP
+\fB\-D\fR \fICHAR\fR
+Use \fICHAR\fR as the output field delimeter.
+.TP
+\fB\-h\fR
+Print a brief help message and quit.
+.TP
+\fB\-n\fR
+Ignored.
+.TP
+\fB\-s\fR
+Supress lines with no field delimiter characters.
+Otherwise lines with no delimters are passed through unmodified.
+.TP
+\fB\-V\fR
+Print version info and quit.
+.TP
+\fB\-w\fR
+Use whitespace (spaces and tabs) as the delimeter.
+Consecutive spaces and tabs count as a single field separator.
+Leading whitespace on a line is ignored.
+.TP
+\fB\-x\fR
+Print debug info for developers.
+.PP
+\fILIST\fR is one or more ranges separated by commas.
+A range is either a number, or two numbers spearated by a hyphen ('-').
+A range may be ascending or descending.
+It selects columns or fields from the first number to the second, inclusive.
+The first number may be omitted (deprecated) which represents all columns
+or fields from 1 to the second number.
+The second number may be omitted which represents all columns or fields
+from the first number to the end of the line.
+A reference to field 0 represents an empty field.
+Ranges may be repeated, overlapping and in any order.
+It is not an error to select columns or fields not present in the input line.
+
+.SH EXAMPLES
+.PP
+Extract users' login names and shells from the system passwd(5) file as
+"name:shell" pairs:
+.EX
+jlcut -d : -f 1,7 /etc/passwd
+.EE
+.PP
+Show the names and login times of the currently logged in users:
+.EX
+who | jlcut -b 1-8,22-
+who | jlcut -w -D ' ' -f 3-4,1-2
+.EE
+
+.SH EXIT VALUES
+\fBjlcut\fR exits 0 on success and >0 if an error occurs.
+
+.SH BUGS
+Support for multi-byte characters is not well tested.
+.PP
+There are compile-time limits on input line length and the number of specified
+fields.
+
+.SH AUTHORS
+Originally written by James W. Lemke, jim@lemke.org.
+
+.SH COPYRIGHT
+.nf
+Copyright (C) 2025 James W. Lemke
+MIT license: See the included file "LICENSE".
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.
+.fi
+
+.SH SEE ALSO
+cut(1), colrm(1), paste(1)
